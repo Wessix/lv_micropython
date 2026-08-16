@@ -119,16 +119,25 @@ void mp_task(void *pvParameter) {
         ESP_LOGE("esp_init", "can't create event loop: 0x%x\n", err);
     }
 
-    void *mp_task_heap = MP_PLAT_ALLOC_HEAP(MICROPY_GC_INITIAL_HEAP_SIZE);
+    size_t heap_sz = MICROPY_GC_INITIAL_HEAP_SIZE;
+    void *mp_task_heap = MP_PLAT_ALLOC_HEAP(heap_sz);
     if (mp_task_heap == NULL) {
-        printf("mp_task_heap allocation failed!\n");
-        esp_restart();
+        #if CONFIG_SPIRAM
+        heap_sz = heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        if (heap_sz > (64 * 1024)) {
+            mp_task_heap = heap_caps_malloc(heap_sz, MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+        }
+        #endif
+        if (mp_task_heap == NULL) {
+            heap_sz = 64 * 1024;
+            mp_task_heap = malloc(heap_sz);
+        }
     }
 
 soft_reset:
     // initialise the stack pointer for the main thread
     mp_cstack_init_with_top((void *)sp, MICROPY_TASK_STACK_SIZE);
-    gc_init(mp_task_heap, mp_task_heap + MICROPY_GC_INITIAL_HEAP_SIZE);
+    gc_init(mp_task_heap, (void *)((uintptr_t)mp_task_heap + heap_sz));
     mp_init();
     mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR__slash_lib));
     readline_init0();

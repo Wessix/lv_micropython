@@ -1,0 +1,12 @@
+{
+    "deploy": [
+        "../deploy_s3.md"
+    ],
+    "docs": "",
+    "id": "M5STACK_CORES3SE",
+    "name": "M5Stack CoreS3 SE (16MB Flash, 8MB Octal PSRAM, LVGL Snapshot)",
+    "product": "CoreS3 SE",
+    "thumbnail": "",
+    "url": "https://m5stack.com",
+    "vendor": "M5Stack"
+}

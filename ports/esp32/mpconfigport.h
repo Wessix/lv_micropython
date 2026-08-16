@@ -30,7 +30,9 @@
 // different for different MCUs and is chosen so they can grow the heap once (double it)
 // and still have enough internal RAM to start WiFi and make a HTTPS request.
 #ifndef MICROPY_GC_INITIAL_HEAP_SIZE
-#if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_SPIRAM
+#define MICROPY_GC_INITIAL_HEAP_SIZE        (4 * 1024 * 1024)
+#elif CONFIG_IDF_TARGET_ESP32
 #define MICROPY_GC_INITIAL_HEAP_SIZE        (56 * 1024)
 #elif CONFIG_IDF_TARGET_ESP32S2 && !CONFIG_SPIRAM
 #define MICROPY_GC_INITIAL_HEAP_SIZE        (36 * 1024)

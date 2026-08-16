@@ -1,4 +1,4 @@
-# This is the default variant when you `make` the Unix port.
-
 FROZEN_MANIFEST ?= $(VARIANT_DIR)/manifest.py
 USER_C_MODULES ?= ${TOP}/user_modules
+CFLAGS_EXTRA += -DMICROPY_SDL=1 -I/usr/include/SDL2 -D_DEFAULT_SOURCE -D_GNU_SOURCE
+LDFLAGS_EXTRA += -lSDL2 -lm -lpthread
